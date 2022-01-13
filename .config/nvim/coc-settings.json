@@ -1,0 +1,23 @@
+{
+  "rust-analyzer.raLspServerPath": "~/dev/tools/rust-analyzer/target/release/ra_lsp_server",
+  "languageserver": {
+    "rust": {
+      "command": "~/dev/tools/rust-analyzer/target/release/ra_lsp_server",
+      "filetypes": ["rust"],
+      "rootPatterns": ["Cargo.toml"]
+    }
+//    "haskell": {
+//      "command": "hie-wrapper",
+//      "rootPatterns": [".stack.yaml", "cabal.config", "package.yaml"],
+//      "filetypes": ["hs", "lhs", "haskell"],
+//      "initializationOptions": {},
+//      "settings": {
+//        "languageServerHaskell": {
+//          "hlintOn": true,
+//          "maxNumberOfProblems": 10,
+//          "completionSnippetsOn": true
+//        }
+//      }
+//    }
+  }
+}
