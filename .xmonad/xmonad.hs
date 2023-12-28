@@ -6,9 +6,10 @@ import XMonad.Layout.NoBorders
 import XMonad.Actions.CycleWS
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook)
+import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen, fullscreenEventHook)
 import XMonad.Util.SpawnOnce
 import Graphics.X11.ExtraTypes.XF86
+import XMonad.Layout.Spacing
 
 myModMask = mod4Mask
 myTerminal = "alacritty"
@@ -34,7 +35,7 @@ myKeys conf = M.fromList $
 myLayout = tiled ||| (Mirror tiled) ||| Full
   where
      -- default tiling algorithm partitions the screen into two panes
-     tiled   = Tall nmaster delta ratio
+     tiled   = spacingRaw True (Border 0 10 10 10) True (Border 10 10 10 10) True $ Tall nmaster delta ratio
 
      -- The default number of windows in the master pane
      nmaster = 1
@@ -57,7 +58,7 @@ myStartupHook = do
   spawnOnce "feh --bg-scale $HOME/Downloads/wallpaper.jpg"
 
 main = do
- xmonad $ ewmh desktopConfig { 
+ xmonad $ ewmh $ ewmhFullscreen desktopConfig { 
    terminal             = myTerminal,
    focusFollowsMouse    = myFocusFollowsMouse,
    clickJustFocuses     = myClickJustFocuses,
@@ -67,7 +68,7 @@ main = do
    keys					= \c -> myKeys c `M.union` keys XMonad.def c,
    layoutHook           = avoidStruts $ myLayout,
    manageHook           = myManageHook <+> manageHook desktopConfig,
-   handleEventHook      = fullscreenEventHook <+> handleEventHook desktopConfig,
+   handleEventHook      = handleEventHook desktopConfig,
    startupHook          = myStartupHook,
    workspaces           = myWorkspaces
  }
