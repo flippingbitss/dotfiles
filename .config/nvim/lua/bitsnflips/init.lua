@@ -1,7 +1,5 @@
 require("bitsnflips.plugins")
 require("bitsnflips.editor")
 require("bitsnflips.keys")
--- require("bitsnflips.filetree")
-require("bitsnflips.fugitive")
 require("bitsnflips.theme")
 require("bitsnflips.statusline")

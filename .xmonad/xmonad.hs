@@ -48,6 +48,7 @@ myLayout = tiled ||| (Mirror tiled) ||| Full
 
 myManageHook = composeAll
  [ (stringProperty "WM_WINDOW_ROLE" =? "GtkFileChooserDialog") --> doFullFloat
+ , isDialog        --> doFloat
  , isFullscreen    --> doFullFloat
  , FS.fullscreenManageHook
  ]

@@ -1,6 +1,9 @@
 -- Space as leader
 vim.g.mapleader = " "
 
+-- Git
+vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
+
 -- Switch to normal mode easily
 vim.keymap.set({ "i", "v", "c" }, "<C-o>", "<Esc>`^")
 

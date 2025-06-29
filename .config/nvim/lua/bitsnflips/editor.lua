@@ -1,5 +1,6 @@
 vim.opt.guicursor = ""
 
+vim.opt.title = true
 vim.opt.nu = true
 vim.opt.relativenumber = true
 
@@ -32,6 +33,4 @@ vim.opt.colorcolumn = "80"
 
 vim.g.mapleader = " "
 
-
-
-
+-- vim.cmd("filetype plugin indent on")
