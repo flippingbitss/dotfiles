@@ -1,6 +1,21 @@
 local lsp_zero = require("lsp-zero")
 local lsp_config = require("lspconfig")
 
+local pos_equal = function(p1, p2)
+	local r1, c1 = unpack(p1)
+	local r2, c2 = unpack(p2)
+	return r1 == r2 and c1 == c2
+end
+
+local goto_error_then_hint = function()
+	local pos = vim.api.nvim_win_get_cursor(0)
+	vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR, wrap = true })
+	local pos2 = vim.api.nvim_win_get_cursor(0)
+	if pos_equal(pos, pos2) then
+		vim.diagnostic.goto_next({ wrap = true })
+	end
+end
+
 lsp_zero.on_attach(function(client, bufnr)
 	local opts = { buffer = bufnr, remap = false }
 
@@ -17,10 +32,10 @@ lsp_zero.on_attach(function(client, bufnr)
 		vim.diagnostic.open_float()
 	end, opts)
 	vim.keymap.set("n", "[d", function()
-		vim.diagnostic.goto_next()
+		vim.diagnostic.goto_prev()
 	end, opts)
 	vim.keymap.set("n", "]d", function()
-		vim.diagnostic.goto_prev()
+		goto_error_then_hint()
 	end, opts)
 	vim.keymap.set("n", "<leader>ca", function()
 		vim.lsp.buf.code_action()
@@ -40,7 +55,7 @@ require("mason").setup({})
 require("mason-lspconfig").setup({
 	ensure_installed = { "ts_ls", "rust_analyzer", "clangd" },
 	handlers = {
-		lsp_zero.default_setup,
+		-- lsp_zero.default_setup,
 		lua_ls = function()
 			local lua_opts = lsp_zero.nvim_lua_ls()
 			lsp_config.lua_ls.setup(lua_opts)
@@ -48,11 +63,15 @@ require("mason-lspconfig").setup({
 	},
 })
 
+lsp_config.ts_ls.setup({})
 lsp_config.dartls.setup({})
 lsp_config.html.setup({})
 lsp_config.cssls.setup({})
 lsp_config.clangd.setup({})
 lsp_config.pylsp.setup({})
+lsp_config.rust_analyzer.setup({})
+lsp_config.astro.setup({})
+lsp_config.tailwindcss.setup({})
 
 local cmp = require("cmp")
 local cmp_select = { behavior = cmp.SelectBehavior.Select }

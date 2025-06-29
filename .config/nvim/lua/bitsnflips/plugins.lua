@@ -16,6 +16,45 @@ return require("packer").startup(function(use)
 		end,
 	})
 
+	use({ "mfussenegger/nvim-jdtls" })
+	-- neotest
+	use({
+		"nvim-neotest/neotest",
+		requires = {
+			"nvim-neotest/nvim-nio",
+			"nvim-lua/plenary.nvim",
+			"antoinemadec/FixCursorHold.nvim",
+			"nvim-treesitter/nvim-treesitter",
+		},
+	})
+
+	-- neotest rust
+	use({
+		"rouge8/neotest-rust",
+		requires = {
+			"nvim-neotest/neotest",
+		},
+	})
+
+	-- debugger
+	use({
+		"mfussenegger/nvim-dap",
+		requires = {
+			{
+				-- Creates a beautiful debugger UI
+				"rcarriga/nvim-dap-ui",
+				-- Required dependency for nvim-dap-ui
+				"nvim-neotest/nvim-nio",
+				-- Installs the debug adapters for you
+				"williamboman/mason.nvim",
+				"jay-babu/mason-nvim-dap.nvim",
+				"theHamsta/nvim-dap-virtual-text",
+				-- Add your own debuggers here
+				"leoluz/nvim-dap-go",
+			},
+		},
+	})
+
 	use("stevearc/conform.nvim")
 
 	-- Fuzzy finder
