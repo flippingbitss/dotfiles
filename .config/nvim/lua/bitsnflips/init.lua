@@ -1,5 +1,0 @@
-require("bitsnflips.plugins")
-require("bitsnflips.editor")
-require("bitsnflips.keys")
-require("bitsnflips.theme")
-require("bitsnflips.statusline")

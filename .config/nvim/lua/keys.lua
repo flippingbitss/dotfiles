@@ -1,5 +1,6 @@
 -- Space as leader
 vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
 -- Git
 vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
@@ -7,11 +8,19 @@ vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
 -- Switch to normal mode easily
 vim.keymap.set({ "i", "v", "c" }, "<C-o>", "<Esc>`^")
 
--- Easy commands
-vim.keymap.set("n", ";", ":")
+-- Clear search highlights with Esc
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
+-- Populate Quickfix list with diagnostics
+vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+
+-- Easier split navigation
+vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
+vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
+vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 -- Exit editor
-vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+-- vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 
 -- Move lines visually selected up and down
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
@@ -45,7 +54,7 @@ vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set("n", "<leader>w", ":w<CR>")
 
 --vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
-vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
+-- vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
 -- Quickfix list navigation
 vim.keymap.set("n", "<C-n>", "<cmd>cnext<CR>zz")
