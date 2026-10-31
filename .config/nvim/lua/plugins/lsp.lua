@@ -10,7 +10,7 @@ return {
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 
 		-- Useful status updates for LSP.
-		{ "j-hui/fidget.nvim", opts = {} },
+		{ "j-hui/fidget.nvim", opts = { notification = { window = { winblend = 0 } } } },
 
 		-- Allows extra capabilities provided by blink.cmp
 		"saghen/blink.cmp",
@@ -39,7 +39,12 @@ return {
 					vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
 				end
 
+				map("gs", function()
+					vim.cmd("LspClangdSwitchSourceHeader")
+				end, "Switch to header/source")
+
 				map("<leader>vd", vim.diagnostic.open_float, "[G]oto [R]eferences")
+				-- map("<leader>grr", vim.diagnostic.open_float, "[G]oto [R]eferences")
 				-- Rename the variable under your cursor.
 				--  Most Language Servers support renaming across files, etc.
 				map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
@@ -49,7 +54,7 @@ return {
 				map("<leader>ca", vim.lsp.buf.code_action, "[G]oto Code [A]ction", { "n", "x" })
 
 				-- Find references for the word under your cursor.
-				map("grr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
+				-- map("grr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
 
 				-- Jump to the implementation of the word under your cursor.
 				--  Useful when your language has ways of declaring types without an actual implementation.
@@ -66,11 +71,11 @@ return {
 
 				-- Fuzzy find all the symbols in your current document.
 				--  Symbols are things like variables, functions, types, etc.
-				map("<leader>fs", require("telescope.builtin").lsp_document_symbols, "Open Document Symbols")
+				map("<leader>fO", require("telescope.builtin").lsp_document_symbols, "Open Document Symbols")
 
 				-- Fuzzy find all the symbols in your current workspace.
 				--  Similar to document symbols, except searches over your entire project.
-				map("<leader>fS", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
+				map("<leader>fo", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
 
 				-- Jump to the type of the word under your cursor.
 				--  Useful when you're not sure what type a variable is and you want to see
@@ -96,35 +101,35 @@ return {
 				--
 				-- When you move your cursor, the highlights will be cleared (the second autocommand).
 				local client = vim.lsp.get_client_by_id(event.data.client_id)
-				-- if
-				-- 	client
-				-- 	and client_supports_method(
-				-- 		client,
-				-- 		vim.lsp.protocol.Methods.textDocument_documentHighlight,
-				-- 		event.buf
-				-- 	)
-				-- then
-				-- 	local highlight_augroup = vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
-				-- 	vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-				-- 		buffer = event.buf,
-				-- 		group = highlight_augroup,
-				-- 		callback = vim.lsp.buf.document_highlight,
-				-- 	})
-				--
-				-- 	vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-				-- 		buffer = event.buf,
-				-- 		group = highlight_augroup,
-				-- 		callback = vim.lsp.buf.clear_references,
-				-- 	})
-				--
-				-- 	vim.api.nvim_create_autocmd("LspDetach", {
-				-- 		group = vim.api.nvim_create_augroup("kickstart-lsp-detach", { clear = true }),
-				-- 		callback = function(event2)
-				-- 			vim.lsp.buf.clear_references()
-				-- 			vim.api.nvim_clear_autocmds({ group = "kickstart-lsp-highlight", buffer = event2.buf })
-				-- 		end,
-				-- 	})
-				-- end
+				if
+					client
+					and client_supports_method(
+						client,
+						vim.lsp.protocol.Methods.textDocument_documentHighlight,
+						event.buf
+					)
+				then
+					local highlight_augroup = vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
+					vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+						buffer = event.buf,
+						group = highlight_augroup,
+						callback = vim.lsp.buf.document_highlight,
+					})
+
+					vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+						buffer = event.buf,
+						group = highlight_augroup,
+						callback = vim.lsp.buf.clear_references,
+					})
+
+					vim.api.nvim_create_autocmd("LspDetach", {
+						group = vim.api.nvim_create_augroup("kickstart-lsp-detach", { clear = true }),
+						callback = function(event2)
+							vim.lsp.buf.clear_references()
+							vim.api.nvim_clear_autocmds({ group = "kickstart-lsp-highlight", buffer = event2.buf })
+						end,
+					})
+				end
 
 				-- The following code creates a keymap to toggle inlay hints in your
 				-- code, if the language server you are using supports them
@@ -137,6 +142,19 @@ return {
 					map("<leader>th", function()
 						vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
 					end, "[T]oggle Inlay [H]ints")
+				end
+			end,
+		})
+
+		vim.api.nvim_create_autocmd("DiagnosticChanged", {
+			pattern = "*.rs",
+			group = vim.api.nvim_create_augroup("kickstart-lsp-update-diagnostic", { clear = true }),
+			callback = function(event)
+				local is_qf_open = vim.iter(vim.fn.getwininfo()):any(function(wininf)
+					return wininf.quickfix == 1
+				end)
+				if is_qf_open then
+					vim.diagnostic.setqflist({ severity = "ERROR" })
 				end
 			end,
 		})
@@ -198,7 +216,15 @@ return {
 			--
 			ts_ls = {},
 			clangd = {},
-			rust_analyzer = {},
+			rust_analyzer = {
+				-- settings = {
+				-- 	["rust-analyzer"] = {
+				-- 		cargo = {
+				-- 			extraArgs = { "--target-dir", "/tmp/rust-analyzer-target" },
+				-- 		},
+				-- 	},
+				-- },
+			},
 			lua_ls = {
 				-- cmd = { ... },
 				-- filetypes = { ... },
@@ -215,6 +241,18 @@ return {
 			},
 			stylua = {}, -- Lua formatter
 		}
+		--
+		-- require("lspconfig")["pyrefly"].setup({
+		-- 	settings = {
+		-- 		python = {
+		-- 			pyrefly = {
+		-- 				typeCheckingMode = "basic",
+		-- 			},
+		-- 		},
+		-- 	},
+		-- })
+		--
+		-- require("lspconfig")["rust_analyzer"].setup(servers.rust_analyzer)
 
 		-- Ensure the servers and tools above are installed
 		--

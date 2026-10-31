@@ -6,10 +6,12 @@ import XMonad.Layout.NoBorders
 import XMonad.Actions.CycleWS
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.SetWMName
 import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen, fullscreenEventHook)
 import XMonad.Util.SpawnOnce
 import Graphics.X11.ExtraTypes.XF86
 import XMonad.Layout.Spacing
+import qualified XMonad.StackSet as W
 
 myModMask = mod4Mask
 myTerminal = "alacritty"
@@ -46,14 +48,25 @@ myLayout = tiled ||| (Mirror tiled) ||| Full
      -- Percent of screen to increment by when resizing panes
      delta   = 3/100
 
+doSizedFloat :: Rational -> Rational -> ManageHook
+doSizedFloat w h =
+  doRectFloat (W.RationalRect
+    ((1 - w) / 2)
+    ((1 - h) / 2)
+    w
+    h)
+
 myManageHook = composeAll
- [ (stringProperty "WM_WINDOW_ROLE" =? "GtkFileChooserDialog") --> doFullFloat
- , isDialog        --> doFloat
+ [ (stringProperty "WM_WINDOW_ROLE" =? "GtkFileChooserDialog") --> doCenterFloat
+ -- , className =? "jetbrains-idea-ce" --> doSizedFloat 0.6 0.6
+ -- , className =? "jetbrains-studio-ce" --> doSizedFloat 0.6 0.6
+ , isDialog        --> doCenterFloat
  , isFullscreen    --> doFullFloat
  , FS.fullscreenManageHook
  ]
 
 myStartupHook = do
+  setWMName "LG3D"
   spawnOnce "setxkbmap -option ctrl:swapcaps"
   spawnOnce "$HOME/.config/polybar/launch.sh"
   spawnOnce "feh --bg-scale $HOME/Downloads/wallpaper.jpg"

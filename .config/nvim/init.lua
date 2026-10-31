@@ -2,6 +2,7 @@
 require("editor")
 require("keys")
 require("lazyy")
+require("helpers")
 
 ----
 ---
@@ -27,7 +28,7 @@ config.setup({
 	highlight = {
 		enable = true,
 	},
-	indent = { enable = true },
+	indent = { enable = false },
 	modules = {},
 	sync_install = true,
 	auto_install = true,

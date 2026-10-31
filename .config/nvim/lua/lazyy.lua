@@ -7,6 +7,15 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "*",
+	callback = function()
+		vim.opt.formatoptions:remove({ "c", "r", "o" })
+	end,
+	group = vim.api.nvim_create_augroup("disable-comment-extension", { clear = true }),
+	desc = "Disable automatic comment continuation",
+})
+
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -31,6 +40,7 @@ rtp:prepend(lazypath)
 require("lazy").setup({
 	-- Detect tabstop and shiftwidth automatically
 	"NMAC427/guess-indent.nvim",
+	"tpope/vim-dispatch",
 
 	-- Color Scheme
 	{
@@ -38,7 +48,12 @@ require("lazy").setup({
 		"sainnhe/gruvbox-material",
 		priority = 1000,
 		config = function()
-			vim.o.background = "dark"
+			-- vim.o.background = "dark"
+			vim.g.gruvbox_material_background = "hard"
+			vim.g.gruvbox_material_colors_override = {
+				bg0 = "#1c1c1c",
+			}
+			-- vim.g.gruvbox_material_transparent_background = 1
 			vim.cmd.colorscheme("gruvbox-material")
 		end,
 	},
@@ -81,6 +96,23 @@ require("lazy").setup({
 			hooks.register(hooks.type.WHITESPACE, hooks.builtin.hide_first_space_indent_level)
 			hooks.register(hooks.type.WHITESPACE, hooks.builtin.hide_first_tab_indent_level)
 		end,
+	},
+	{
+		"leath-dub/snipe.nvim",
+		keys = {
+			{
+				"<leader>o",
+				function()
+					require("snipe").open_buffer_menu()
+				end,
+				desc = "Open Snipe buffer menu",
+			},
+		},
+		opts = {
+			ui = {
+				position = "center",
+			},
+		},
 	},
 	-- spec = {
 	{ import = "plugins" },

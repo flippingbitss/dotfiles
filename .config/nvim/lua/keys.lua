@@ -12,7 +12,9 @@ vim.keymap.set({ "i", "v", "c" }, "<C-o>", "<Esc>`^")
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 -- Populate Quickfix list with diagnostics
-vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+vim.keymap.set("n", "<leader>q", function()
+	vim.diagnostic.setqflist({ severity = "ERROR" })
+end, { desc = "Open diagnostic [Q]uickfix list" })
 
 -- Easier split navigation
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
@@ -39,6 +41,9 @@ vim.keymap.set("n", "N", "Nzzzv")
 
 -- Visual select & paste keeps originally yanked text
 vim.keymap.set("x", "<leader>p", [["_dP]])
+
+-- Replace word under cursor with last yanked text without clobbering registers
+vim.keymap.set("n", "<leader>rp", [["_ciw<C-r>0<Esc>]], { desc = "Replace word with yank" })
 
 -- Yank to system clipboard as well
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
