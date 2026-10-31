@@ -1,0 +1,14 @@
+configuration { 
+	modes: "window,drun"; 
+	show-icons: true;
+	icon-theme: "Papirus";
+	font: "JetBrains Mono 14";
+	terminal: "alacritty";
+	lines: 10;
+	columns: 1;
+	padding: 1000;
+	width: 25;
+	dpi: 150;
+	bw: 0;
+}	
+@theme "solarized" 
